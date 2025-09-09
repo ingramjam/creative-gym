@@ -419,11 +419,24 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="bg-white rounded-lg shadow-md">
+                            <h2>
+                                <button type="button" class="accordion-button flex items-center justify-between w-full p-6 font-semibold text-left text-xl text-[#004445]" data-accordion-target="#accordion-body-4">
+                                    <span>4. Partnership & Investment Opportunities</span>
+                                    <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordion-body-4" class="accordion-content">
+                                <div class="p-6 border-t border-gray-200 text-gray-600">
+                                     <p>We are developing a flexible range of incentives to align with the goals of our partners. The following concepts are currently in development and can be tailored to create mutually beneficial partnerships.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                         <h3 class="text-3xl font-bold text-center mb-8 text-[#004445]">Become a Founding Partner</h3>
-                        <form action="https://formspree.io/f/your-unique-id" method="POST">
+                        <form id="investment-form">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
@@ -449,9 +462,23 @@
                             </div>
                              <div class="mb-6">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Other Interests</label>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="event_rental" name="interest_event_rental" value="yes" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
-                                    <label for="event_rental" class="ml-2 text-gray-700">I'm interested in event space rental opportunities.</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="event_rental" name="interest_event_rental" value="Event Space Rental" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
+                                        <label for="event_rental" class="ml-2 text-gray-700">Event Space Rental</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="sponsor_equipment" name="interest_sponsor_equipment" value="Sponsor Equipment" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
+                                        <label for="sponsor_equipment" class="ml-2 text-gray-700">Sponsor Equipment</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="professional_time" name="interest_professional_time" value="Donate Professional Time" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
+                                        <label for="professional_time" class="ml-2 text-gray-700">Donate Professional Time</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="donation" name="interest_donation" value="Make a Donation" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
+                                        <label for="donation" class="ml-2 text-gray-700">Make a Donation</label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="text-center">
@@ -608,6 +635,42 @@
                     }
                 });
             });
+            
+            const investmentForm = document.getElementById('investment-form');
+            investmentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const investmentRange = document.querySelector('input[name="investment_range"]:checked')?.value || 'Not specified';
+                const message = document.getElementById('message').value;
+
+                let otherInterests = [];
+                if (document.getElementById('event_rental').checked) otherInterests.push('Event Space Rental');
+                if (document.getElementById('sponsor_equipment').checked) otherInterests.push('Sponsor Equipment');
+                if (document.getElementById('professional_time').checked) otherInterests.push('Donate Professional Time');
+                if (document.getElementById('donation').checked) otherInterests.push('Make a Donation');
+                
+                let interestsString = otherInterests.length > 0 ? otherInterests.join(', ') : 'None specified';
+
+                const subject = `Creative Gym Investment Inquiry from ${name}`;
+                const body = `
+New inquiry from the website:
+
+Name: ${name}
+Email: ${email}
+Anticipated Investment Range: ${investmentRange}
+
+Message:
+${message}
+
+Other Interests:
+${interestsString}
+                `;
+
+                window.location.href = `mailto:ingramjam@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+
 
             const lmiCtx = document.getElementById('lmiChart').getContext('2d');
             const lmiChart = new Chart(lmiCtx, {

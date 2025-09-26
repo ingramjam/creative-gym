@@ -8,423 +8,656 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Special+Elite&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: 90s MTV Neon & Grunge -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Deep Teal -->
     <!-- Application Structure Plan: The SPA is designed as a top-to-bottom narrative scroll, guiding potential funders from the core problem to the ultimate vision. The structure is thematic: 1) Hero section to establish the mission. 2) An interactive "Problem" section using cards to make the challenges tangible. 3) A tabbed "Solution" section with a mood board image and digestible parts (Facilities, Mentorship, etc.). 4) An "Impact & Model" section with interactive charts and pricing tiers to clearly present the business case and social return. 5) A "Strategy" section outlining the phased approach. This non-linear, thematic structure is more engaging and user-friendly than a linear report, allowing users to explore components based on interest while still following a compelling story. -->
     <!-- Visualization & Content Choices: 1) Problem Section: Report Info -> Barriers to entry. Goal -> Inform/Engage. Viz -> Interactive cards with icons. Interaction -> Hover to lift and reveal details. Justification -> More engaging than a text block. Method -> HTML/Tailwind/JS. 2) Solution Section: Report Info -> Gym components. Goal -> Organize/Inform. Viz -> Mood board image and modern tabbed interface. Interaction -> Click tabs to switch content. Justification -> Provides visual context and prevents information overload. Method -> HTML/Tailwind/JS. 3) Impact Section: Report Info -> Membership goals and demographics. Goal -> Inform/Compare. Viz -> Donut and Bar charts. Interaction -> Tooltips on hover. Justification -> Visualizes key metrics for quick comprehension. Library -> Chart.js. 4) Strategy Section: Report Info -> Phased funding approach. Goal -> Show Change/Process. Viz -> Redesigned vertical timeline. Interaction -> Highlighting steps. Justification -> Clearly illustrates the long-term plan. Method -> HTML/Tailwind. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
-            font-family: 'Special Elite', monospace;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23222" fill-opacity="0.4"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>');
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
         }
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'VT323', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-family: 'Poppins', sans-serif;
         }
-        .header-90s {
-            background-color: #111;
-            border-bottom: 4px solid #00ff9b;
-        }
-        .gradient-text-90s {
-            background: linear-gradient(90deg, #ff00ff, #00ff9b, #ffff00);
+        .gradient-text {
+            background: linear-gradient(90deg, #004445, #00796B);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .button-90s {
-            background-color: #4a4a4a;
-            border: 2px solid #e0e0e0;
-            border-right-color: #555;
-            border-bottom-color: #555;
-            box-shadow: inset 2px 2px 0 #999, inset -2px -2px 0 #000;
-            color: #00ff9b;
-            text-shadow: 1px 1px #000;
-            transition: all 0.1s ease;
+        .tab-active {
+            background-color: #004445;
+            color: #FFFFFF;
+            font-weight: 600;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .button-90s:active {
-            transform: translate(2px, 2px);
-            box-shadow: none;
+        .tab-inactive {
+            background-color: #FFFFFF;
+            color: #004445;
         }
-        .card-90s {
-            background-color: #2a2a2a;
-            border: 4px outset #666;
-            transform: skew(-2deg);
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
         }
-        .tab-active-90s {
-            background-color: #00ff9b;
-            color: #111;
-            font-weight: bold;
-            border-style: inset;
+        .doughnut-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
         }
-        .tab-inactive-90s {
-            background-color: #333;
-            color: #e0e0e0;
-             border-style: outset;
+        .problem-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .dot { transition: all 0.3s ease; }
-        .dot-active { background-color: #00ff9b; transform: scale(1.5); }
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
-        .accordion-button svg { transition: transform 0.3s ease; }
-        .accordion-button.open svg { transform: rotate(180deg); }
+        .problem-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px -5px rgba(0, 68, 69, 0.1);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .dot {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .dot-active {
+            background-color: #004445;
+            transform: scale(1.25);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .accordion-button svg {
+            transition: transform 0.3s ease;
+        }
+        .accordion-button.open svg {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="antialiased">
-    <header class="header-90s sticky top-0 z-50">
+    <header class="bg-[#FDFBF8]/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <h1 class="text-3xl font-bold gradient-text-90s">The CREATIVE GYM</h1>
+            <h1 class="text-2xl font-bold gradient-text">The Creative Gym</h1>
             <div class="hidden md:flex space-x-8 items-center">
-                <a href="#problem" class="text-gray-200 hover:text-[#00ff9b] transition font-semibold text-lg">INTENT</a>
-                <a href="#solution" class="text-gray-200 hover:text-[#00ff9b] transition font-semibold text-lg">IDEA</a>
-                <a href="#impact" class="text-gray-200 hover:text-[#00ff9b] transition font-semibold text-lg">IMPACT</a>
-                <a href="#invest" class="button-90s px-5 py-2 text-lg font-semibold">INVEST</a>
+                <a href="#problem" class="text-gray-600 hover:text-[#004445] transition font-semibold">Intent</a>
+                <a href="#solution" class="text-gray-600 hover:text-[#004445] transition font-semibold">Idea</a>
+                <a href="#impact" class="text-gray-600 hover:text-[#004445] transition font-semibold">Impact</a>
+                <a href="#invest" class="bg-[#004445] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#00796B] transition-all duration-300 transform hover:scale-105">Invest</a>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t-2 border-[#00ff9b]">
-             <a href="#problem" class="block py-2 text-gray-200 hover:text-[#00ff9b] font-semibold text-lg">INTENT</a>
-             <a href="#solution" class="block py-2 text-gray-200 hover:text-[#00ff9b] font-semibold text-lg">IDEA</a>
-             <a href="#impact" class="block py-2 text-gray-200 hover:text-[#00ff9b] font-semibold text-lg">IMPACT</a>
-             <a href="#invest" class="block mt-2 button-90s px-4 py-2 text-center font-semibold text-lg">INVEST</a>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4">
+             <a href="#problem" class="block py-2 text-gray-600 hover:text-[#004445] font-semibold">Intent</a>
+             <a href="#solution" class="block py-2 text-gray-600 hover:text-[#004445] font-semibold">Idea</a>
+             <a href="#impact" class="block py-2 text-gray-600 hover:text-[#004445] font-semibold">Impact</a>
+             <a href="#invest" class="block mt-2 bg-[#004445] text-white px-4 py-2 rounded-full hover:bg-[#00796B] text-center font-semibold">Invest</a>
         </div>
     </header>
 
     <main>
-        <section id="hero" class="relative bg-black pt-16 md:pt-24 pb-24 overflow-hidden">
+        <section id="hero" class="relative bg-white pt-16 md:pt-24 pb-24 overflow-hidden">
             <div id="solution-scroll-container" class="mb-8 flex overflow-x-auto space-x-6 pb-4 hide-scrollbar snap-x snap-mandatory">
-                <!-- Gallery items -->
-                <div class="group relative rounded-none overflow-hidden border-4 border-fuchsia-500 h-64 cursor-pointer flex-none w-96 snap-center">
+                <!-- Digital Arts Lab -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_6e7a72189dd34d5f8825ee13f6887852~mv2.png)"></div>
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/75 text-white">
-                        <h4 class="text-2xl">Digital Arts Lab</h4>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">💻 Digital Arts Lab</h4>
+                        <p class="text-sm opacity-90">Adobe Creative Cloud & 3D software.</p>
                     </div>
                 </div>
-                <div class="group relative rounded-none overflow-hidden border-4 border-cyan-400 h-64 cursor-pointer flex-none w-96 snap-center">
+                <!-- Maker & Fab Space -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_47dc3002dd5b4a2ab83a213cabf120a9~mv2.png)"></div>
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                     <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/75 text-white">
-                        <h4 class="text-2xl">Maker & Fab Space</h4>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🛠️ Maker & Fab Space</h4>
+                        <p class="text-sm opacity-90">3D printers, laser & vinyl cutters.</p>
                     </div>
                 </div>
-                <div class="group relative rounded-none overflow-hidden border-4 border-yellow-300 h-64 cursor-pointer flex-none w-96 snap-center">
+                <!-- Studio Arts Wing -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_4f565a7f52f54f6ea006d4b967301a00~mv2.png)"></div>
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                     <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/75 text-white">
-                        <h4 class="text-2xl">Studio Arts Wing</h4>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🎨 Studio Arts Wing</h4>
+                        <p class="text-sm opacity-90">Easels & screen-printing.</p>
                     </div>
                 </div>
-                 <div class="group relative rounded-none overflow-hidden border-4 border-fuchsia-500 h-64 cursor-pointer flex-none w-96 snap-center">
+                 <!-- Co-Working Space -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url('https://static.wixstatic.com/media/43bd37_e6fbf872beac4d0c9c20811c5ea9f1a3~mv2.png')"></div>
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                     <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/75 text-white">
-                        <h4 class="text-2xl">Co-Working Spaces</h4>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🤝 Co-Working Spaces</h4>
+                        <p class="text-sm opacity-90">Collaborative desks and private offices.</p>
                     </div>
                 </div>
-                <div class="group relative rounded-none overflow-hidden border-4 border-cyan-400 h-64 cursor-pointer flex-none w-96 snap-center">
+                <!-- Culinary Arts Station -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_7f292b60ac1d47bebef5d8bd43f228c6~mv2.png)"></div>
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/75 text-white">
-                        <h4 class="text-2xl">Culinary Arts Station</h4>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🍳 Culinary Arts Station</h4>
+                        <p class="text-sm opacity-90">Commercial kitchen space.</p>
+                    </div>
+                </div>
+                <!-- Media Booth -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_ac015d76f67644e7b59c2432b295728f~mv2.png)"></div>
+                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🎤 Media Booth</h4>
+                        <p class="text-sm opacity-90">Podcasting & recording.</p>
+                    </div>
+                </div>
+                <!-- Street Arts Yard -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url(https://static.wixstatic.com/media/43bd37_84d62c52645e43d5a37accc129eedbcb~mv2.png)"></div>
+                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🧱 Street Arts Yard</h4>
+                        <p class="text-sm opacity-90">Large-scale mural practice.</p>
+                    </div>
+                </div>
+                 <!-- Event Space -->
+                <div class="group relative rounded-xl overflow-hidden shadow-lg h-64 cursor-pointer flex-none w-96 snap-center">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-125" style="background-image: url('https://static.wixstatic.com/media/43bd37_e6fbf872beac4d0c9c20811c5ea9f1a3~mv2.png')"></div>
+                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-900/50 rounded-b-xl text-white">
+                        <h4 class="text-xl font-bold">🎉 Event Spaces</h4>
+                        <p class="text-sm opacity-90">For workshops, galleries, and community meetups.</p>
                     </div>
                 </div>
             </div>
              <div id="solution-dots" class="flex justify-center space-x-2 mb-12"></div>
+             <div class="absolute inset-0 z-0 opacity-10" style="background-image: url('data:image/svg+xml;utf8,<svg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-48 48c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48-48c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z\" fill=\"%23004445\"/></svg>');"></div>
             <div class="container mx-auto px-6 text-center relative z-10">
-                <h2 class="text-6xl md:text-8xl font-bold gradient-text-90s leading-none" style="text-shadow: 3px 3px 0px #000;">Forging Creative Careers.</h2>
-                <p class="mt-4 text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">This ain't your parent's country club. This is a space to build, to make, to hustle. It's an ecosystem for the next wave.</p>
-                <a href="#problem" class="mt-8 inline-block button-90s text-2xl px-10 py-4 font-bold">Check The 411</a>
+                <h2 class="text-5xl md:text-7xl font-bold gradient-text leading-tight">Forging Creative Careers.</h2>
+                <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">We're building a community-based ecosystem to bridge the gap between creative passion and professional success. Explore how we're making creative careers accessible for all.</p>
+                <a href="#problem" class="mt-8 inline-block bg-[#FF6B6B] text-white font-bold px-10 py-4 rounded-full hover:bg-[#ff5252] transition shadow-lg transform hover:scale-105 duration-300 ease-in-out">Explore the Model</a>
             </div>
         </section>
 
         <section id="problem" class="py-24">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
-                    <h3 class="text-5xl font-bold text-[#00ff9b]">THE INTENT: WHY WE EXIST</h3>
-                    <p class="mt-3 text-xl text-gray-300 max-w-2xl mx-auto">The creative game is rigged. Talent ain't enough when the doors are locked. We're here to pick those locks.</p>
+                    <h3 class="text-4xl md:text-5xl font-bold text-[#004445]">Our Intent: Solving The Opportunity Gap</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">In a thriving creative city, significant systemic barriers prevent diverse talent from launching sustainable careers. We are addressing these challenges head-on.</p>
                 </div>
                 <div id="problem-scroll-container" class="flex overflow-x-auto space-x-8 pb-4 hide-scrollbar snap-x snap-mandatory">
-                    <div class="card-90s p-8 flex-none w-80 snap-center">
-                        <h4 class="text-3xl text-yellow-300">THE ACCESS GAP</h4>
-                        <p class="mt-2 text-lg">Pro gear costs bank. We got the gear. You bring the ideas.</p>
+                    <div class="problem-card bg-white p-8 rounded-xl shadow-md border-t-4 border-[#FF6B6B] flex-none w-80 snap-center">
+                        <p class="text-4xl mb-4">💡</p>
+                        <h4 class="text-xl font-bold text-[#004445]">The Access Gap</h4>
+                        <p class="mt-2 text-gray-600">Professional-grade tools, software, and facilities are prohibitively expensive for individuals.</p>
                     </div>
-                    <div class="card-90s p-8 flex-none w-80 snap-center">
-                        <h4 class="text-3xl text-yellow-300">THE MENTORSHIP DEFICIT</h4>
-                        <p class="mt-2 text-lg">Knowing people is half the battle. Our mentors are in the trenches.</p>
+                    <div class="problem-card bg-white p-8 rounded-xl shadow-md border-t-4 border-[#FF6B6B] flex-none w-80 snap-center">
+                        <p class="text-4xl mb-4">👥</p>
+                        <h4 class="text-xl font-bold text-[#004445]">The Mentorship Deficit</h4>
+                        <p class="mt-2 text-gray-600">Practical industry knowledge and guidance from experienced professionals are scarce.</p>
                     </div>
-                    <div class="card-90s p-8 flex-none w-80 snap-center">
-                        <h4 class="text-3xl text-yellow-300">ECONOMIC BARRIERS</h4>
-                        <p class="mt-2 text-lg">Art school is a joke for most people's wallets. This is the alternative.</p>
+                    <div class="problem-card bg-white p-8 rounded-xl shadow-md border-t-4 border-[#FF6B6B] flex-none w-80 snap-center">
+                        <p class="text-4xl mb-4">💰</p>
+                        <h4 class="text-xl font-bold text-[#004445]">Economic Barriers</h4>
+                        <p class="mt-2 text-gray-600">A formal design degree is financially unattainable for a huge portion of the population.</p>
                     </div>
-                    <div class="card-90s p-8 flex-none w-80 snap-center">
-                        <h4 class="text-3xl text-yellow-300">ISOLATION & NETWORK</h4>
-                        <p class="mt-2 text-lg">Creating alone sucks. Find your crew. Build your future.</p>
+                    <div class="problem-card bg-white p-8 rounded-xl shadow-md border-t-4 border-[#FF6B6B] flex-none w-80 snap-center">
+                        <p class="text-4xl mb-4">🔗</p>
+                        <h4 class="text-xl font-bold text-[#004445]">Isolation & Network</h4>
+                        <p class="mt-2 text-gray-600">The creative process is often solitary, limiting collaboration and professional growth.</p>
                     </div>
                 </div>
                  <div id="problem-dots" class="flex justify-center space-x-2 mt-4"></div>
             </div>
         </section>
         
-        <section id="solution" class="py-24 bg-black">
+        <section id="solution" class="py-24 bg-white">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
-                    <h3 class="text-5xl font-bold text-[#00ff9b]">THE IDEA: THE ECOSYSTEM</h3>
-                    <p class="mt-3 text-xl text-gray-300 max-w-2xl mx-auto">It's a gym for your creative hustle. Choose your workout.</p>
+                    <h3 class="text-4xl md:text-5xl font-bold text-[#004445]">The Idea: An Ecosystem for Growth</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">The Creative Gym is an integrated platform for professional development. Explore our core components, all structured like a familiar gym membership.</p>
                 </div>
 
                 <div class="max-w-4xl mx-auto">
                     <div id="tabs" class="flex justify-center mb-8 flex-wrap gap-2 md:gap-4">
-                        <button data-tab="facilities" class="tab-button-90s text-xl p-4 border-2 tab-active-90s">THE "GYM FLOOR"</button>
-                        <button data-tab="mentors" class="tab-button-90s text-xl p-4 border-2 tab-inactive-90s">"PERSONAL TRAINERS"</button>
-                        <button data-tab="classes" class="tab-button-90s text-xl p-4 border-2 tab-inactive-90s">"GROUP CLASSES"</button>
-                        <button data-tab="mapping" class="tab-button-90s text-xl p-4 border-2 tab-inactive-90s">"WORKOUT PLAN"</button>
+                        <button data-tab="facilities" class="tab-button flex-grow md:flex-grow-0 px-6 py-3 text-lg font-medium transition rounded-full shadow-sm tab-active">The "Gym Floor"</button>
+                        <button data-tab="mentors" class="tab-button flex-grow md:flex-grow-0 px-6 py-3 text-lg font-medium transition rounded-full shadow-sm tab-inactive">"Personal Trainers"</button>
+                        <button data-tab="classes" class="tab-button flex-grow md:flex-grow-0 px-6 py-3 text-lg font-medium transition rounded-full shadow-sm tab-inactive">"Group Classes"</button>
+                        <button data-tab="mapping" class="tab-button flex-grow md:flex-grow-0 px-6 py-3 text-lg font-medium transition rounded-full shadow-sm tab-inactive">"Workout Plan"</button>
                     </div>
 
-                    <div id="tab-content" class="bg-gray-800 p-8 border-4 border-fuchsia-500">
+                    <div id="tab-content" class="bg-gray-50 p-8 rounded-xl transition-opacity duration-300 min-h-[300px]">
                         <div id="facilities" class="tab-pane">
-                            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
-                                <h5 class="text-2xl text-yellow-300">DIGITAL ARTS LAB</h5>
-                                <h5 class="text-2xl text-yellow-300">MAKER & FAB SPACE</h5>
-                                <h5 class="text-2xl text-yellow-300">STUDIO ARTS WING</h5>
-                                <h5 class="text-2xl text-yellow-300">CO-WORKING</h5>
-                                <h5 class="text-2xl text-yellow-300">CULINARY ARTS</h5>
-                                <h5 class="text-2xl text-yellow-300">MEDIA BOOTH</h5>
+                            <h4 class="text-2xl font-bold text-center text-[#004445] mb-6">State-of-the-Art Facilities</h4>
+                            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                                <div class="p-4"><h5 class="font-bold">💻 Digital Arts Lab</h5><p class="text-sm text-gray-600">Adobe Creative Cloud & 3D software.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🛠️ Maker & Fab Space</h5><p class="text-sm text-gray-600">3D printers, laser & vinyl cutters.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🎨 Studio Arts Wing</h5><p class="text-sm text-gray-600">Easels & screen-printing.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🤝 Co-Working Space</h5><p class="text-sm text-gray-600">Desks, offices & meeting rooms.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🍳 Culinary Arts Station</h5><p class="text-sm text-gray-600">Commercial kitchen space.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🎤 Media Booth</h5><p class="text-sm text-gray-600">Podcasting & recording.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🧱 Street Arts Yard</h5><p class="text-sm text-gray-600">Large-scale mural practice.</p></div>
+                                <div class="p-4"><h5 class="font-bold">🎉 Event Space</h5><p class="text-sm text-gray-600">Workshops & gallery rentals.</p></div>
                             </div>
                         </div>
-                        <div id="mentors" class="tab-pane hidden"><p class="text-center text-xl">Get 1-on-1 time with pros who actually do the work. No fluff.</p></div>
-                        <div id="classes" class="tab-pane hidden"><p class="text-center text-xl">Workshops to sharpen your skills. From Photoshop to business basics.</p></div>
-                        <div id="mapping" class="tab-pane hidden"><p class="text-center text-xl">A roadmap from passion to paycheck. We help you plan the moves.</p></div>
+                        <div id="mentors" class="tab-pane hidden">
+                             <h4 class="text-2xl font-bold text-center text-[#004445] mb-6">Professional Mentorship</h4>
+                             <p class="text-center max-w-2xl mx-auto text-gray-600 text-lg">Our network of vetted industry professionals provides one-on-one guidance, portfolio reviews, and career advice—the core of our model. Members get direct access to experts from San Diego's top agencies, restaurants, and studios.</p>
+                        </div>
+                        <div id="classes" class="tab-pane hidden">
+                            <h4 class="text-2xl font-bold text-center text-[#004445] mb-6">Hands-On Workshops</h4>
+                             <p class="text-center max-w-2xl mx-auto text-gray-600 mb-4">A dynamic schedule of classes helps members build specific, marketable skills. Taught by industry practitioners.</p>
+                             <ul class="text-center columns-2 text-gray-600">
+                                <li>Branding 101</li>
+                                <li>Food Photography</li>
+                                <li>WordPress Basics</li>
+                                <li>Vector Illustration</li>
+                             </ul>
+                        </div>
+                        <div id="mapping" class="tab-pane hidden">
+                            <h4 class="text-2xl font-bold text-center text-[#004445] mb-6">Creative Career Mapping</h4>
+                            <p class="text-center max-w-2xl mx-auto text-gray-600 text-lg">A structured program to map a professional journey: setting tangible goals, identifying skill gaps, building a market-ready portfolio, and developing a strategy to secure employment or launch a freelance business.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="impact" class="py-24">
-             <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h3 class="text-5xl font-bold text-[#00ff9b]">THE IMPACT: THE PROOF</h3>
-                    <p class="mt-3 text-xl text-gray-300 max-w-2xl mx-auto">This is about changing the game. Here's the score for Year 1.</p>
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-16">
+                    <h3 class="text-4xl md:text-5xl font-bold text-[#004445]">Our Impact: Model & Projections</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Our accessible membership model is designed for sustainability and community impact. Explore our tiers and key Year 1 outcomes.</p>
                 </div>
                 <div class="grid lg:grid-cols-2 gap-12 items-center">
-                    <div class="card-90s p-8">
-                         <h4 class="text-4xl text-center text-yellow-300 mb-8">MEMBERSHIP TIERS</h4>
-                         <div class="space-y-6 text-center">
-                            <div><h5 class="text-3xl text-fuchsia-400">OPEN STUDIO</h5><p class="text-2xl">$45/mo</p></div>
-                            <div class="bg-black p-4"><h5 class="text-3xl text-cyan-400">ALL-ACCESS PASS</h5><p class="text-2xl">$90/mo</p></div>
-                            <div><h5 class="text-3xl text-fuchsia-400">PROFESSIONAL TRACK</h5><p class="text-2xl">$175/mo</p></div>
+                    <div>
+                         <h4 class="text-3xl font-bold text-center text-[#004445] mb-8">Membership Tiers</h4>
+                         <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-[#FF6B6B] transition group">
+                                <h5 class="text-xl font-bold text-[#004445]">Open Studio</h5>
+                                <p class="text-4xl font-bold my-2">$45<span class="text-lg font-normal text-gray-500">/mo</span></p>
+                                <p class="text-gray-600">Access to co-working spaces and a set number of lab hours.</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-xl border-2 border-[#FF6B6B] transform scale-105">
+                                <span class="bg-[#FF6B6B] text-white text-xs font-bold px-3 py-1 rounded-full absolute -top-3 right-6">POPULAR</span>
+                                <h5 class="text-xl font-bold text-[#004445]">All-Access Pass</h5>
+                                <p class="text-4xl font-bold my-2">$90<span class="text-lg font-normal text-gray-500">/mo</span></p>
+                                <p class="text-gray-600">Includes 4 workshops per month and expanded lab access.</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-[#FF6B6B] transition group">
+                                <h5 class="text-xl font-bold text-[#004445]">Professional Track</h5>
+                                <p class="text-4xl font-bold my-2">$175<span class="text-lg font-normal text-gray-500">/mo</span></p>
+                                <p class="text-gray-600">All-access plus 4 hours of 1-on-1 mentorship and career mapping.</p>
+                            </div>
                          </div>
                     </div>
                     <div class="space-y-8">
-                        <div class="card-90s p-6">
-                            <h4 class="text-2xl text-center text-yellow-300 mb-4">LMI HOUSEHOLD MEMBERS</h4>
-                            <div class="doughnut-container"><canvas id="lmiChart"></canvas></div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h4 class="text-xl font-bold text-center text-[#004445] mb-4">LMI Household Members</h4>
+                            <div class="doughnut-container">
+                                <canvas id="lmiChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center mt-4 text-gray-500">Goal: 40% of members from low-to-moderate income households.</p>
                         </div>
-                         <div class="card-90s p-6">
-                            <h4 class="text-2xl text-center text-yellow-300 mb-4">YEAR 1 GOALS</h4>
-                            <div class="chart-container h-64"><canvas id="goalsChart"></canvas></div>
+                         <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h4 class="text-xl font-bold text-center text-[#004445] mb-4">Program Goals (Year 1)</h4>
+                            <div class="chart-container h-64">
+                                <canvas id="goalsChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="invest" class="py-24 bg-black">
+        <section id="strategy" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-16">
+                    <h3 class="text-4xl md:text-5xl font-bold text-[#004445]">Our Strategy: Phased Growth</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">We are pursuing a strategic, phased approach to ensure sustainable growth, amplified through collaboration with key community partners.</p>
+                </div>
+                <div class="max-w-xl mx-auto">
+                    <div class="relative">
+                        <div class="absolute left-4 w-1 h-full bg-gray-200 rounded-full"></div>
+                        <div class="relative mb-10 pl-12">
+                            <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#FF6B6B] border-4 border-white flex items-center justify-center text-white font-bold">1</div>
+                            <h4 class="font-bold text-2xl text-[#004445]">Phase 1: Pilot Program</h4>
+                            <p class="text-gray-600">Secure seed funding to establish proof of concept. Launch our pilot facility, recruit founding mentors, and establish our subsidized membership program.</p>
+                            <p class="font-bold text-[#004445] mt-2">Funding Goal: <span class="text-[#FF6B6B]">$120,000</span></p>
+                        </div>
+                         <div class="relative mb-10 pl-12">
+                            <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#004445] border-4 border-white flex items-center justify-center text-white font-bold">2</div>
+                            <h4 class="font-bold text-2xl text-[#004445]">Key Partnerships</h4>
+                            <p class="text-gray-600">Establish formal partnerships with the San Diego Workforce Partnership, local colleges, and non-profits to create referral pathways and align training with economic needs.</p>
+                        </div>
+                        <div class="relative pl-12">
+                           <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#004445] border-4 border-white flex items-center justify-center text-white font-bold">3</div>
+                            <h4 class="font-bold text-2xl text-[#004445]">Phase 2: Scale & Expand</h4>
+                            <p class="text-gray-600">Leverage pilot impact to pursue larger foundation, state, and federal grants to scale operations, expand our facility, and increase our reach across the county.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="invest" class="py-24 bg-gray-50">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
-                    <h2 class="text-5xl font-bold text-[#00ff9b]">INVEST: GET IN THE GAME</h2>
-                    <p class="mt-3 text-xl text-gray-300 max-w-3xl mx-auto">We're looking for partners to build this with us. If you get the vision, let's talk.</p>
+                    <h2 class="text-4xl md:text-5xl font-bold text-[#004445]">Invest In Our Vision</h2>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">For a detailed overview, please review the proposal summary below. To become a founding partner, please fill out the inquiry form.</p>
                 </div>
-                 <div class="max-w-2xl mx-auto card-90s p-8">
-                        <form id="investment-form">
+                <div class="max-w-4xl mx-auto">
+                    <div id="accordion-container" class="space-y-4 mb-16">
+                        <!-- Accordion Item 1 -->
+                        <div class="bg-white rounded-lg shadow-md">
+                            <h2>
+                                <button type="button" class="accordion-button flex items-center justify-between w-full p-6 font-semibold text-left text-xl text-[#004445]" data-accordion-target="#accordion-body-1">
+                                    <span>1. Executive Summary</span>
+                                    <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordion-body-1" class="accordion-content">
+                                <div class="p-6 border-t border-gray-200">
+                                    <p class="text-gray-600">The Creative Gym is a novel concept designed to bridge the critical gap between raw creative talent and a sustainable professional career... This initiative directly addresses the lack of affordable, practical, and career-focused creative education, aiming to democratize access to the creative industries and build a vibrant, skilled local workforce.</p>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Accordion Item 2 -->
+                        <div class="bg-white rounded-lg shadow-md">
+                            <h2>
+                                <button type="button" class="accordion-button flex items-center justify-between w-full p-6 font-semibold text-left text-xl text-[#004445]" data-accordion-target="#accordion-body-2">
+                                    <span>2. Statement of Need</span>
+                                    <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordion-body-2" class="accordion-content">
+                                <div class="p-6 border-t border-gray-200 text-gray-600">
+                                    <p>The path to a successful creative career is often obscure, cost-prohibitive, and fraught with challenges that have little to do with talent. Key barriers include:</p>
+                                    <ul class="list-disc list-inside space-y-2">
+                                        <li><b>Access to Tools:</b> Professional-grade equipment is prohibitively expensive.</li>
+                                        <li><b>The Guidance Gap:</b> Practical industry knowledge is scarce and hard-won.</li>
+                                        <li><b>Isolation:</b> The creative process often inhibits collaboration and networking.</li>
+                                        <li><b>Prohibitive Education Costs:</b> Traditional art programs are financially unattainable for many.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Accordion Item 3 -->
+                        <div class="bg-white rounded-lg shadow-md">
+                            <h2>
+                                <button type="button" class="accordion-button flex items-center justify-between w-full p-6 font-semibold text-left text-xl text-[#004445]" data-accordion-target="#accordion-body-3">
+                                    <span>3. Project Description</span>
+                                    <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordion-body-3" class="accordion-content">
+                                <div class="p-6 border-t border-gray-200 text-gray-600">
+                                     <p>Our model is built on the familiar "gym" analogy, making it intuitive and accessible through four core components:</p>
+                                      <ul class="list-disc list-inside space-y-2">
+                                        <li><b>The "Gym Floor":</b> State-of-the-art, multi-disciplinary facilities and equipment.</li>
+                                        <li><b>"Personal Trainers":</b> One-on-one mentorship from vetted industry professionals.</li>
+                                        <li><b>"Group Classes":</b> A robust schedule of hands-on workshops and courses.</li>
+                                        <li><b>The "Workout Plan":</b> A structured program for career mapping and portfolio development.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-8">
+                         <h3 class="text-3xl font-bold text-[#004445]">Become a Founding Partner</h3>
+                    </div>
+                    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                        <form action="https://formspree.io/f/your-unique-id" method="POST">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
-                                    <label for="name" class="block text-yellow-300 text-xl mb-2">NAME</label>
-                                    <input type="text" id="name" name="name" class="w-full p-2 bg-black border-2 border-gray-500 text-white text-lg">
+                                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#00796B]" required>
                                 </div>
                                 <div>
-                                    <label for="email" class="block text-yellow-300 text-xl mb-2">EMAIL</label>
-                                    <input type="email" id="email" name="email" class="w-full p-2 bg-black border-2 border-gray-500 text-white text-lg">
+                                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#00796B]" required>
                                 </div>
                             </div>
                             <div class="mb-6">
-                                <label class="block text-yellow-300 text-xl mb-2">INVESTMENT RANGE</label>
-                                <div class="grid grid-cols-2 gap-4 text-lg">
-                                    <label class="flex items-center"><input type="radio" name="investment_range" value="1k-5k" class="mr-2">$1k - $5k</label>
-                                    <label class="flex items-center"><input type="radio" name="investment_range" value="5k-25k" class="mr-2">$5k - $25k</label>
-                                    <label class="flex items-center"><input type="radio" name="investment_range" value="25k-50k" class="mr-2">$25k - $50k</label>
-                                    <label class="flex items-center"><input type="radio" name="investment_range" value="50k+" class="mr-2">$50k+</label>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Anticipated Investment Range</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="investment_range" value="1k-5k" class="mr-3 h-4 w-4 text-[#00796B] focus:ring-[#004445]">$1,000 - $5,000</label>
+                                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="investment_range" value="5k-25k" class="mr-3 h-4 w-4 text-[#00796B] focus:ring-[#004445]">$5,001 - $25,000</label>
+                                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="investment_range" value="25k-50k" class="mr-3 h-4 w-4 text-[#00796B] focus:ring-[#004445]">$25,001 - $50,000</label>
+                                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"><input type="radio" name="investment_range" value="50k+" class="mr-3 h-4 w-4 text-[#00796B] focus:ring-[#004445]">$50,001+</label>
                                 </div>
                             </div>
                             <div class="mb-6">
-                                <label for="message" class="block text-yellow-300 text-xl mb-2">MESSAGE</label>
-                                <textarea id="message" name="message" rows="5" class="w-full p-2 bg-black border-2 border-gray-500 text-white text-lg"></textarea>
+                                <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message</label>
+                                <textarea id="message" name="message" rows="5" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#00796B]" placeholder="Tell us a bit about your interest in The Creative Gym..."></textarea>
                             </div>
-                            <div class="mb-6">
-                                <label class="block text-yellow-300 text-xl mb-2">OTHER WAYS TO HELP</label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
-                                    <label class="flex items-center"><input type="checkbox" name="interest_event_rental" value="Event Space Rental" class="mr-2">Event Space Rental</label>
-                                    <label class="flex items-center"><input type="checkbox" name="interest_sponsor_equipment" value="Sponsor Equipment" class="mr-2">Sponsor Equipment</label>
-                                    <label class="flex items-center"><input type="checkbox" name="interest_professional_time" value="Donate Pro Time" class="mr-2">Donate Pro Time</label>
-                                    <label class="flex items-center"><input type="checkbox" name="interest_donation" value="Make a Donation" class="mr-2">Make a Donation</label>
+                             <div class="mb-6">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Other Interests</label>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="event_rental" name="interest_event_rental" value="yes" class="h-4 w-4 text-[#00796B] focus:ring-[#004445] border-gray-300 rounded">
+                                    <label for="event_rental" class="ml-2 text-gray-700">I'm interested in event space rental opportunities.</label>
                                 </div>
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="button-90s text-2xl px-10 py-4 font-bold">SEND IT</button>
+                                <button type="submit" class="bg-[#FF6B6B] text-white font-bold px-10 py-4 rounded-full hover:bg-[#ff5252] transition shadow-lg transform hover:scale-105 duration-300 ease-in-out">Send Inquiry</button>
                             </div>
                         </form>
                     </div>
+                </div>
             </div>
         </section>
 
-        <footer class="bg-black text-white border-t-4 border-fuchsia-500">
-            <div class="container mx-auto px-6 py-12 text-center">
-                <p class="text-2xl gradient-text-90s">THE CREATIVE GYM // 1995</p>
-                <a href="mailto:ingramjam@gmail.com" class="mt-4 inline-block text-cyan-400 hover:underline">ingramjam@gmail.com</a>
+
+        <footer class="bg-[#004445] text-white">
+            <div class="container mx-auto px-6 py-20 text-center">
+                <h3 class="text-4xl font-bold">Ready to Build With Us?</h3>
+                <p class="mt-4 text-lg text-gray-300 max-w-xl mx-auto">We are seeking partners and funders to help launch this vital community resource. Get in touch to start a conversation.</p>
+                <a href="mailto:ingramjam@gmail.com" class="mt-8 inline-block bg-[#FF6B6B] text-white font-bold px-10 py-4 rounded-full hover:bg-[#ff5252] transition shadow-lg transform hover:scale-105 duration-300 ease-in-out">Contact Us</a>
             </div>
         </footer>
     </main>
-    
-    <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
-        <div class="relative bg-black p-4 border-4 border-yellow-300">
-            <button id="modal-close-button" class="absolute -top-4 -right-4 bg-black rounded-full p-1 border-2 border-white text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <img id="modal-image" src="" class="max-w-full max-h-[80vh] object-contain">
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Menu
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
-
-            // Tabs
-            const tabs = document.querySelectorAll('.tab-button-90s');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const tabs = document.querySelectorAll('.tab-button');
             const tabPanes = document.querySelectorAll('.tab-pane');
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     const target = tab.getAttribute('data-tab');
                     tabs.forEach(t => {
-                        t.classList.remove('tab-active-90s');
-                        t.classList.add('tab-inactive-90s');
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
                     });
-                    tab.classList.add('tab-active-90s');
-                    tab.classList.remove('tab-inactive-90s');
-                    tabPanes.forEach(pane => { pane.classList.toggle('hidden', pane.id !== target); });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+                    tabPanes.forEach(pane => {
+                        pane.classList.toggle('hidden', pane.id !== target);
+                    });
                 });
             });
             
-            // Horizontal Scroll Logic
             function setupHorizontalScroll(scrollContainerId, dotsContainerId) {
                 const scrollContainer = document.getElementById(scrollContainerId);
                 const dotsContainer = document.getElementById(dotsContainerId);
                 if (!scrollContainer || !dotsContainer) return;
+
                 const items = Array.from(scrollContainer.children);
-                if (items.length === 0) return;
+                const itemCount = items.length;
+                if (itemCount === 0) return;
+                
                 dotsContainer.innerHTML = '';
-                items.forEach((item, i) => {
+
+                for (let i = 0; i < itemCount; i++) {
                     const dot = document.createElement('button');
-                    dot.className = 'dot w-4 h-4 bg-gray-600 border-2 border-gray-400';
-                    dot.addEventListener('click', () => { item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); });
+                    dot.classList.add('dot', 'w-3', 'h-3', 'bg-gray-300', 'rounded-full');
+                    dot.addEventListener('click', () => {
+                        items[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    });
                     dotsContainer.appendChild(dot);
-                });
+                }
+
                 const dots = Array.from(dotsContainer.children);
+
                 function updateDots() {
                     const scrollLeft = scrollContainer.scrollLeft;
                     const containerWidth = scrollContainer.clientWidth;
-                    let activeIndex = -1, maxVisibleWidth = 0;
+                    
+                    let activeIndex = -1;
+                    let maxVisibleWidth = 0;
+
                     items.forEach((item, index) => {
                         const itemLeft = item.offsetLeft - scrollContainer.offsetLeft - scrollLeft;
                         const itemRight = itemLeft + item.clientWidth;
+                        
                         const visibleWidth = Math.max(0, Math.min(itemRight, containerWidth) - Math.max(itemLeft, 0));
-                        if (visibleWidth > maxVisibleWidth) { maxVisibleWidth = visibleWidth; activeIndex = index; }
+                        
+                        if (visibleWidth > maxVisibleWidth) {
+                            maxVisibleWidth = visibleWidth;
+                            activeIndex = index;
+                        }
                     });
-                    dots.forEach((dot, index) => { dot.classList.toggle('dot-active', index === activeIndex); });
+
+                    dots.forEach((dot, index) => {
+                        dot.classList.toggle('dot-active', index === activeIndex);
+                    });
                 }
-                scrollContainer.addEventListener('wheel', (evt) => { if (Math.abs(evt.deltaX) > Math.abs(evt.deltaY)) return; evt.preventDefault(); scrollContainer.scrollLeft += evt.deltaY; }, { passive: false });
+                
+                scrollContainer.addEventListener('wheel', (evt) => {
+                    if (Math.abs(evt.deltaX) > Math.abs(evt.deltaY)) return;
+                    evt.preventDefault();
+                    scrollContainer.scrollLeft += evt.deltaY;
+                }, { passive: false });
+
                 scrollContainer.addEventListener('scroll', updateDots);
                 window.addEventListener('resize', updateDots);
                 updateDots();
             }
-            setupHorizontalScroll('problem-scroll-container', 'problem-dots');
 
+            setupHorizontalScroll('problem-scroll-container', 'problem-dots');
+            
             let autoScrollInterval;
+
             function setupAutoScroll(scrollContainerId) {
                 const scrollContainer = document.getElementById(scrollContainerId);
                 if (!scrollContainer) return;
                 const items = Array.from(scrollContainer.children);
                 if (items.length <= 1) return;
+
                 autoScrollInterval = setInterval(() => {
                     const currentScroll = scrollContainer.scrollLeft;
                     const totalWidth = scrollContainer.scrollWidth;
                     const itemWidth = items[0].offsetWidth + parseInt(getComputedStyle(items[0]).marginRight);
                     let nextScroll = currentScroll + itemWidth;
-                    if (nextScroll >= totalWidth - scrollContainer.clientWidth) { nextScroll = 0; }
-                    scrollContainer.scrollTo({ left: nextScroll, behavior: 'smooth' });
-                }, 4000);
+
+                    if (nextScroll >= totalWidth - scrollContainer.clientWidth) {
+                        nextScroll = 0;
+                    }
+                    scrollContainer.scrollTo({
+                        left: nextScroll,
+                        behavior: 'smooth'
+                    });
+                }, 7000);
             }
+            
             setupHorizontalScroll('solution-scroll-container', 'solution-dots');
             setupAutoScroll('solution-scroll-container');
-
-            // Form
-            const investmentForm = document.getElementById('investment-form');
-            investmentForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const investmentRange = document.querySelector('input[name="investment_range"]:checked')?.value || 'Not specified';
-                const message = document.getElementById('message').value;
-                let otherInterests = [];
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(item => otherInterests.push(item.value));
-                let interestsString = otherInterests.length > 0 ? otherInterests.join(', ') : 'None specified';
-                const subject = `Creative Gym Investment Inquiry from ${name}`;
-                const body = `New inquiry from the website:\n\nName: ${name}\nEmail: ${email}\nAnticipated Investment Range: ${investmentRange}\n\nMessage:\n${message}\n\nOther Interests:\n${interestsString}`;
-                window.location.href = `mailto:ingramjam@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            });
             
-            // Charts
-            Chart.defaults.font.family = "'VT323', monospace";
-            Chart.defaults.color = '#e0e0e0';
-            Chart.defaults.font.size = 16;
-            const lmiCtx = document.getElementById('lmiChart').getContext('2d');
-            new Chart(lmiCtx, {
-                type: 'doughnut',
-                data: { labels: ['LMI Households', 'Other'], datasets: [{ data: [40, 60], backgroundColor: ['#ff00ff', '#00ff9b'], borderColor: '#2a2a2a', borderWidth: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } } } }
-            });
-            const goalsCtx = document.getElementById('goalsChart').getContext('2d');
-            new Chart(goalsCtx, {
-                type: 'bar',
-                data: { labels: ['Total Members', 'Career Mapping', 'Placements'], datasets: [{ data: [150, 50, 30], backgroundColor: ['#ff00ff', '#00ff9b', '#ffff00'] }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { y: { grid: { display: false } }, x: { grid: { color: '#444' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.parsed.x} Individuals` } } } }
-            });
-
-            // Modal
-            const modal = document.getElementById('image-modal');
-            const modalImage = document.getElementById('modal-image');
-            const modalCloseButton = document.getElementById('modal-close-button');
-            const galleryImages = document.querySelectorAll('#solution-scroll-container .group');
-            galleryImages.forEach(imgContainer => {
-                imgContainer.addEventListener('click', () => {
-                    const bgImageStyle = imgContainer.querySelector('div[style]').style.backgroundImage;
-                    const imageUrl = bgImageStyle.slice(5, -2);
-                    modalImage.src = imageUrl;
-                    modal.classList.remove('hidden');
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = document.querySelector(button.dataset.accordionTarget);
+                    button.classList.toggle('open');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
                 });
             });
-            function closeModal() { modal.classList.add('hidden'); modalImage.src = ''; }
-            modalCloseButton.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => { if (e.target === modal) { closeModal(); } });
+
+            const lmiCtx = document.getElementById('lmiChart').getContext('2d');
+            const lmiChart = new Chart(lmiCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['LMI Households', 'Other'],
+                    datasets: [{
+                        data: [40, 60],
+                        backgroundColor: ['#FF6B6B', '#004445'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.label}: ${context.raw}%`
+                            }
+                        }
+                    }
+                }
+            });
+
+            const goalsCtx = document.getElementById('goalsChart').getContext('2d');
+            const goalsChart = new Chart(goalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Members', 'Career Mapping', 'Placements'],
+                    datasets: [{
+                        label: 'Year 1 Pilot Program Goals',
+                        data: [150, 50, 30],
+                        backgroundColor: ['#004445', '#00796B', '#FF6B6B'],
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { display: false } },
+                        x: { grid: { color: '#EEE' }, suggestedMax: 160 }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.parsed.x} Individuals`
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 </body>
 </html>
-
